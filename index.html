@@ -4,7 +4,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>CSV/XLSX Code Compare (Local)</title>
+    <header class="appHeader">
+        <img src="assets/logo.png" alt="Code Compare logo" class="appLogo">
+        <div class="appTitle">
+            <p>Upload old + new exports, map columns, filter, normalize, and compare by key.</p>
+        </div>
+    </header>
+
 
     <!-- CSS -->
     <style>
@@ -111,6 +117,37 @@
             border: 1px solid rgba(255, 255, 255, 0.20);
             background: rgba(255, 255, 255, 0.08);
             color: rgba(231, 238, 252, 0.75);
+        }
+
+        .appHeader{
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .appLogo{
+            height: 56px;
+            width: auto;
+            flex-shrink: 0;
+        }
+
+        .appTitle h1{
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .appTitle p{
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .appLogo{
+            height: 70px;
+            filter: drop-shadow(0 6px 16px rgba(0,0,0,0.45));
         }
 
         select,
@@ -700,7 +737,7 @@
         </div>
 
         <div class="card">
-            <h2>3) Filters (optional)</h2>
+            <h2>3) Filters </h2>
 
             <div class="grid">
                 <div>
