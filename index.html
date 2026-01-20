@@ -1,0 +1,1184 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CSV/XLSX Code Compare (Local)</title>
+
+    <!-- CSS -->
+    <style>
+        :root {
+            --bg: #0b1220;
+            --panel: rgba(255, 255, 255, 0.06);
+            --panelBorder: rgba(255, 255, 255, 0.10);
+            --field: rgba(255, 255, 255, 0.08);
+            --fieldBorder: rgba(255, 255, 255, 0.14);
+            --text: #e7eefc;
+            --muted: rgba(231, 238, 252, 0.72);
+            --accent: #2b6cff;
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        html {
+            color-scheme: dark;
+        }
+
+        body {
+            margin: 24px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0 0 10px;
+        }
+
+        .sub {
+            color: var(--muted);
+            font-size: 12px;
+            margin: 0 0 18px;
+            max-width: 1200px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+
+        .card {
+            flex: 1 1 360px;
+            min-width: 320px;
+            background: var(--panel);
+            border: 1px solid var(--panelBorder);
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card h2 {
+            font-size: 14px;
+            margin: 0 0 10px;
+            opacity: .92;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .grid>* {
+            min-width: 0;
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--muted);
+            display: block;
+            margin: 8px 0 6px;
+            line-height: 1.2;
+        }
+
+        .labelRow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0 6px;
+        }
+
+        .labelRow label {
+            margin: 0;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(43, 108, 255, 0.35);
+            background: rgba(43, 108, 255, 0.14);
+            color: rgba(231, 238, 252, 0.9);
+            white-space: nowrap;
+        }
+
+        .badge.opt {
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(231, 238, 252, 0.75);
+        }
+
+        select,
+        input,
+        textarea,
+        button {
+            font: inherit;
+        }
+
+        .filewrap {
+            min-width: 0;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid var(--fieldBorder);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+        }
+
+        select,
+        input,
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            background: var(--field);
+            color: var(--text);
+            border: 1px solid var(--fieldBorder);
+            border-radius: 10px;
+            padding: 10px 10px;
+            outline: none;
+        }
+
+        option {
+            background: #101a2e;
+            color: var(--text);
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            border-color: rgba(43, 108, 255, 0.6);
+            box-shadow: 0 0 0 3px rgba(43, 108, 255, 0.18);
+        }
+
+        textarea {
+            min-height: 84px;
+            resize: vertical;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .right {
+            margin-left: auto;
+        }
+
+        button {
+            background: var(--accent);
+            border: 0;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 650;
+        }
+
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .tablewrap {
+            overflow: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.03);
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 980px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            vertical-align: top;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: rgba(11, 18, 32, 0.95);
+            text-align: left;
+            font-size: 12px;
+            letter-spacing: .02em;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .pill {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .ok {
+            background: rgba(43, 255, 155, 0.12);
+            border: 1px solid rgba(43, 255, 155, 0.25);
+        }
+
+        .bad {
+            background: rgba(255, 77, 77, 0.12);
+            border: 1px solid rgba(255, 77, 77, 0.25);
+        }
+
+        .add {
+            background: rgba(43, 108, 255, 0.12);
+            border: 1px solid rgba(43, 108, 255, 0.25);
+        }
+
+        .rem {
+            background: rgba(255, 195, 77, 0.12);
+            border: 1px solid rgba(255, 195, 77, 0.25);
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            font-size: 12px;
+        }
+
+        .diffbox {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 12px;
+            align-items: start;
+        }
+
+        .diffbox>div {
+            min-width: 0;
+        }
+
+        pre {
+            margin: 0;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            overflow: auto;
+            max-height: 360px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            white-space: pre;
+            word-break: normal;
+            min-width: 0;
+            scrollbar-gutter: stable both-edges;
+        }
+
+        .splitRow {
+            display: grid;
+            grid-template-columns: minmax(360px, 1fr) 18px minmax(420px, 2fr);
+            align-items: stretch;
+            gap: 12px;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .splitRow>.card {
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .splitter {
+            cursor: col-resize;
+            width: 18px;
+            border-radius: 999px;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            position: relative;
+            z-index: 1;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+            /* make it easier to hit */
+            touch-action: none;
+        }
+
+        .splitter::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 60px;
+            transform: translate(-50%, -50%);
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(231, 238, 252, 0.65) 2px, transparent 3px) 0 0 / 6px 10px;
+            opacity: 0.85;
+        }
+
+        .splitter:hover {
+            background: rgba(43, 108, 255, 0.16);
+            border-color: rgba(43, 108, 255, 0.45);
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 0 4px rgba(43, 108, 255, 0.10);
+        }
+
+        .splitter.dragging {
+            background: rgba(43, 108, 255, 0.24);
+            border-color: rgba(43, 108, 255, 0.65);
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 0 6px rgba(43, 108, 255, 0.12);
+        }
+
+        .line {
+            display: block;
+            padding: 0 6px;
+            border-radius: 6px;
+            width: max-content;
+            min-width: 100%;
+        }
+
+        .line.add {
+            background: rgba(43, 255, 155, 0.10);
+        }
+
+        .line.del {
+            background: rgba(255, 77, 77, 0.10);
+        }
+
+        .line.same {
+            opacity: .9;
+        }
+
+        @media (max-width: 980px) {
+            body {
+                margin: 14px;
+            }
+
+            .card {
+                min-width: 280px;
+            }
+
+            .diffbox {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                min-width: 860px;
+            }
+
+            .splitRow {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .splitter {
+                display: none;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls .right {
+                margin-left: 0;
+            }
+
+            #showOnly,
+            #search {
+                width: 100% !important;
+            }
+
+            table {
+                min-width: 760px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Local CSV/XLSX Code Comparator</h1>
+    <p class="sub">
+        Upload old + new exports, map columns, filter by author/object, then compare by key.
+        Default comparison trims trailing spaces per line.
+    </p>
+
+    <div class="row">
+        <div class="card">
+            <h2>1) Upload files</h2>
+            <div class="grid">
+                <div>
+                    <label>Old file (CSV / XLSX)</label>
+                    <div class="filewrap">
+                        <input type="file" id="oldFile" accept=".csv,.xlsx,.xls" />
+                    </div>
+                    <div class="muted" id="oldInfo"></div>
+                </div>
+                <div>
+                    <label>New file (CSV / XLSX)</label>
+                    <div class="filewrap">
+                        <input type="file" id="newFile" accept=".csv,.xlsx,.xls" />
+                    </div>
+                    <div class="muted" id="newInfo"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>2) Map columns</h2>
+
+            <div class="grid">
+                <div>
+                    <div class="labelRow">
+                        <label>Key / Object column (match rows)</label>
+                        <span class="badge">Required</span>
+                    </div>
+                    <select id="colKey"></select>
+                </div>
+
+                <div>
+                    <div class="labelRow">
+                        <label>Secondary key column</label>
+                        <span class="badge opt">Optional</span>
+                    </div>
+                    <select id="colKey2"></select>
+                </div>
+
+                <div>
+                    <div class="labelRow">
+                        <label>Code snippet column to compare</label>
+                        <span class="badge">Required</span>
+                    </div>
+                    <select id="colCode"></select>
+                </div>
+
+                <div>
+                    <div class="labelRow">
+                        <label>Author column</label>
+                        <span class="badge opt">Optional</span>
+                    </div>
+                    <select id="colAuthor"></select>
+                </div>
+
+                <div>
+                    <div class="labelRow">
+                        <label>Date column</label>
+                        <span class="badge opt">Optional</span>
+                    </div>
+                    <select id="colDate"></select>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="compareBtn" class="right" disabled type="button">Compare</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>3) Filters (optional)</h2>
+
+            <div class="grid">
+                <div>
+                    <label>Authors to include (one per line)</label>
+                    <textarea id="filterAuthors" placeholder="John Doe&#10;Jane Doe"></textarea>
+                </div>
+                <div>
+                    <label>Objects to include (one per line)</label>
+                    <textarea id="filterObjects" placeholder="ZCL_FOO&#10;ZIF_BAR"></textarea>
+                </div>
+            </div>
+
+            <div class="controls">
+                <label style="margin:0;color:var(--muted);">Show</label>
+                <select id="showOnly" style="width:220px;">
+                    <option value="all">All</option>
+                    <option value="changed">Changed only</option>
+                    <option value="unchanged">Unchanged only</option>
+                    <option value="added">Added in new</option>
+                    <option value="removed">Removed in new</option>
+                </select>
+
+                <input id="search" class="right" style="width:240px;" placeholder="Search key/object..." />
+            </div>
+        </div>
+    </div>
+
+    <div class="splitRow" style="margin-top: 16px;">
+
+        <div class="card" id="resultsCard">
+            <h2>Results</h2>
+            <div class="controls">
+                <div id="stats" class="muted"></div>
+
+                <button id="exportCsvBtn" class="right" disabled type="button">Export CSV</button>
+                <button id="exportXlsxBtn" disabled type="button">Export XLSX</button>
+            </div>
+
+            <div class="tablewrap" style="margin-top:10px;">
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Key</th>
+                            <th>Old author</th>
+                            <th>New author</th>
+                            <th>Old date</th>
+                            <th>New date</th>
+                            <th>Diff preview</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <p class="muted" style="margin-top:10px;">Click a row to see full side-by-side diff.</p>
+        </div>
+
+        <div class="splitter" id="splitter" title="Drag to resize"></div>
+
+        <div class="card" id="diffCard">
+            <h2>Diff viewer</h2>
+            <div class="muted" id="diffTitle">Select a row with ❌ to view differences.</div>
+
+            <div class="diffbox" style="margin-top: 10px;">
+                <div>
+                    <label>Old</label>
+                    <pre id="oldDiff" class="mono"></pre>
+                </div>
+                <div>
+                    <label>New</label>
+                    <pre id="newDiff" class="mono"></pre>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CSV parser -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <!-- XLSX parser + writer (style-enabled) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+
+    <!-- JS -->
+    <script>
+        const state = {
+            oldRows: [],
+            newRows: [],
+            cols: [],
+            results: [],
+            reportCsv: ""
+        };
+
+        const $ = (id) => document.getElementById(id);
+
+        function linesToSet(text) {
+            return new Set(
+                (text || "")
+                    .split("\n")
+                    .map(s => s.trim())
+                    .filter(Boolean)
+                    .map(s => s.toLowerCase())
+            );
+        }
+
+        function normalizeCode(code) {
+            const s = (code ?? "").toString().replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+            return s.split("\n").map(line => line.replace(/\s+$/g, "")).join("\n");
+        }
+
+        function readFile(file) {
+            const name = file.name.toLowerCase();
+
+            if (name.endsWith(".csv") || name.endsWith(".txt")) {
+                return new Promise((resolve, reject) => {
+                    Papa.parse(file, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: (res) => resolve(res.data),
+                        error: reject
+                    });
+                });
+            }
+
+            if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const data = new Uint8Array(e.target.result);
+                            const wb = XLSX.read(data, { type: "array" });
+                            const sheetName = wb.SheetNames[0];
+                            const ws = wb.Sheets[sheetName];
+                            const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+                            resolve(json);
+                        } catch (err) {
+                            reject(err);
+                        }
+                    };
+                    reader.onerror = reject;
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            return Promise.reject(new Error("Unsupported file type"));
+        }
+
+        function getColumns(rows) {
+            const cols = new Set();
+            rows.forEach(r => Object.keys(r || {}).forEach(k => cols.add(k)));
+            return Array.from(cols);
+        }
+
+        function fillSelect(selectEl, cols) {
+            selectEl.innerHTML = "";
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "(none)";
+            selectEl.appendChild(opt);
+
+            cols.forEach(c => {
+                const o = document.createElement("option");
+                o.value = c;
+                o.textContent = c;
+                selectEl.appendChild(o);
+            });
+        }
+
+        function guessColumn(cols, patterns) {
+            const lc = cols.map(c => ({ c, lc: c.toLowerCase() }));
+            for (const p of patterns) {
+                const hit = lc.find(x => x.lc === p) || lc.find(x => x.lc.includes(p));
+                if (hit) return hit.c;
+            }
+            return "";
+        }
+
+        function parseDateMaybe(v) {
+            const t = Date.parse(v);
+            return Number.isFinite(t) ? t : null;
+        }
+
+        function buildKey(row, keyCols) {
+            return keyCols.map(c => (row?.[c] ?? "").toString().trim()).join("||");
+        }
+
+        function dedupeLatestByDate(rows, keyCols, dateCol) {
+            const map = new Map();
+            for (const r of rows) {
+                const key = buildKey(r, keyCols);
+                if (!key) continue;
+
+                if (!map.has(key)) {
+                    map.set(key, r);
+                    continue;
+                }
+
+                if (!dateCol) {
+                    map.set(key, r);
+                    continue;
+                }
+
+                const cur = map.get(key);
+                const t1 = parseDateMaybe(cur?.[dateCol] ?? "") ?? -Infinity;
+                const t2 = parseDateMaybe(r?.[dateCol] ?? "") ?? -Infinity;
+                if (t2 >= t1) map.set(key, r);
+            }
+            return map;
+        }
+
+        function simpleLineDiff(oldText, newText) {
+            const a = oldText.split("\n");
+            const b = newText.split("\n");
+            const max = Math.max(a.length, b.length);
+            let sameLines = 0;
+            for (let i = 0; i < max; i++) {
+                if ((a[i] ?? "") === (b[i] ?? "")) sameLines++;
+            }
+            return { sameLines, max };
+        }
+
+        function renderDiff(preEl, text, classesByLine) {
+            preEl.textContent = "";
+            const frag = document.createDocumentFragment();
+            const lines = text.split("\n");
+            lines.forEach((line, idx) => {
+                const span = document.createElement("span");
+                span.className = "line " + (classesByLine[idx] || "same");
+                span.textContent = line + (idx === lines.length - 1 ? "" : "\n");
+                frag.appendChild(span);
+            });
+            preEl.appendChild(frag);
+        }
+
+        function computeSideBySideHighlight(oldText, newText) {
+            const a = oldText.split("\n");
+            const b = newText.split("\n");
+            const max = Math.max(a.length, b.length);
+            const aCls = [];
+            const bCls = [];
+            for (let i = 0; i < max; i++) {
+                const al = a[i] ?? "";
+                const bl = b[i] ?? "";
+                if (al === bl) {
+                    aCls.push("same");
+                    bCls.push("same");
+                } else {
+                    aCls.push("del");
+                    bCls.push("add");
+                }
+            }
+            return { aCls, bCls };
+        }
+
+        function statusPill(status) {
+            if (status === "UNCHANGED") return `<span class="pill ok">✅ Same</span>`;
+            if (status === "CHANGED") return `<span class="pill bad">❌ Diff</span>`;
+            if (status === "ADDED") return `<span class="pill add">➕ Added</span>`;
+            if (status === "REMOVED") return `<span class="pill rem">➖ Removed</span>`;
+            return status;
+        }
+
+        function buildReportCsv(results) {
+            const header = [
+                "Status", "Key", "SecondaryKey",
+                "OldAuthor", "NewAuthor",
+                "OldDate", "NewDate",
+                "OldCode", "NewCode"
+            ];
+
+            const rows = results
+                .filter(r => r.status !== "UNCHANGED")
+                .map(r => [
+                    r.status,
+                    r.keyPrimary ?? "",
+                    r.keySecondary ?? "",
+                    r.oldAuthor ?? "",
+                    r.newAuthor ?? "",
+                    r.oldDate ?? "",
+                    r.newDate ?? "",
+                    r.oldCode ?? "",
+                    r.newCode ?? ""
+                ]);
+
+            const esc = (v) => `"${String(v).replaceAll('"', '""')}"`;
+
+            return [
+                header.map(esc).join(","),
+                ...rows.map(row => row.map(esc).join(","))
+            ].join("\n");
+        }
+
+        function downloadText(filename, text, mime = "text/plain") {
+            const blob = new Blob([text], { type: mime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportReportXlsx(results) {
+                try {
+                    const headers = [
+                        "Status", "Key", "SecondaryKey", "OldAuthor", "NewAuthor",
+                        "OldDate", "NewDate", "OldCode", "NewCode"
+                    ];
+
+                    const rows = results
+                        .filter(r => r.status !== "UNCHANGED")
+                        .map(r => ([
+                            r.status,
+                            r.keyPrimary ?? "",
+                            r.keySecondary ?? "",
+                            r.oldAuthor ?? "",
+                            r.newAuthor ?? "",
+                            r.oldDate ?? "",
+                            r.newDate ?? "",
+                            r.oldCode ?? "",
+                            r.newCode ?? ""
+                        ]));
+
+                    // ✅ Works even when json_to_sheet doesn't exist
+                    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+                    ws["!cols"] = [
+                        { wch: 10 }, { wch: 22 }, { wch: 16 }, { wch: 16 }, { wch: 16 },
+                        { wch: 18 }, { wch: 18 }, { wch: 60 }, { wch: 60 }
+                    ];
+
+                    const range = XLSX.utils.decode_range(ws["!ref"] || "A1:A1");
+                    ws["!autofilter"] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 0, c: range.e.c } }) };
+
+                    const headerStyle = {
+                        font: { bold: true, color: { rgb: "FFFFFF" } },
+                        fill: { fgColor: { rgb: "1F2A44" } },
+                        alignment: { vertical: "center", horizontal: "center", wrapText: true },
+                        border: {
+                            top: { style: "thin", color: { rgb: "2D3A55" } },
+                            bottom: { style: "thin", color: { rgb: "2D3A55" } },
+                            left: { style: "thin", color: { rgb: "2D3A55" } },
+                            right: { style: "thin", color: { rgb: "2D3A55" } },
+                        }
+                    };
+
+                    for (let c = range.s.c; c <= range.e.c; c++) {
+                        const addr = XLSX.utils.encode_cell({ r: 0, c });
+                        if (ws[addr]) ws[addr].s = headerStyle;
+                    }
+
+                    const wrapStyle = { alignment: { vertical: "top", wrapText: true } };
+                    for (let r = 1; r <= range.e.r; r++) {
+                        for (const c of [7, 8]) { // OldCode, NewCode
+                            const addr = XLSX.utils.encode_cell({ r, c });
+                            if (ws[addr]) ws[addr].s = wrapStyle;
+                        }
+                    }
+
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Diff report");
+                    XLSX.writeFile(wb, "compare_report.xlsx");
+                } catch (e) {
+                    alert("XLSX export failed: " + (e?.message || e));
+                    console.error(e);
+                }
+            }
+
+
+        function applyViewFilters() {
+            const mode = $("showOnly").value;
+            const q = $("search").value.trim().toLowerCase();
+
+            let rows = state.results.slice();
+
+            if (mode !== "all") {
+                rows = rows.filter(r => {
+                    if (mode === "changed") return r.status === "CHANGED";
+                    if (mode === "unchanged") return r.status === "UNCHANGED";
+                    if (mode === "added") return r.status === "ADDED";
+                    if (mode === "removed") return r.status === "REMOVED";
+                    return true;
+                });
+            }
+
+            if (q) rows = rows.filter(r => (r.key || "").toLowerCase().includes(q));
+            renderResultsTable(rows);
+        }
+
+        function renderResultsTable(rows) {
+            const tbody = $("resultsTable").querySelector("tbody");
+            tbody.innerHTML = "";
+
+            rows.forEach((r) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+          <td>${statusPill(r.status)}</td>
+          <td class="mono">${r.key}</td>
+          <td>${r.oldAuthor ?? ""}</td>
+          <td>${r.newAuthor ?? ""}</td>
+          <td>${r.oldDate ?? ""}</td>
+          <td>${r.newDate ?? ""}</td>
+          <td class="muted">${r.preview ?? ""}</td>
+        `;
+
+                tr.addEventListener("click", () => {
+                    $("diffTitle").textContent = `${r.status}: ${r.key}`;
+                    const oldText = r.oldCode ?? "";
+                    const newText = r.newCode ?? "";
+
+                    const { aCls, bCls } = computeSideBySideHighlight(oldText, newText);
+                    renderDiff($("oldDiff"), oldText, aCls);
+                    renderDiff($("newDiff"), newText, bCls);
+                });
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateStats() {
+            const counts = state.results.reduce((acc, r) => {
+                acc[r.status] = (acc[r.status] || 0) + 1;
+                return acc;
+            }, {});
+            $("stats").textContent =
+                `Total: ${state.results.length} | ` +
+                `✅ ${counts.UNCHANGED || 0} | ❌ ${counts.CHANGED || 0} | ➕ ${counts.ADDED || 0} | ➖ ${counts.REMOVED || 0}`;
+        }
+
+        async function handleFilesChanged() {
+            const oldFile = $("oldFile").files[0];
+            const newFile = $("newFile").files[0];
+
+            state.oldRows = [];
+            state.newRows = [];
+            state.cols = [];
+            state.results = [];
+
+            $("compareBtn").disabled = true;
+            $("exportCsvBtn").disabled = true;
+            $("exportXlsxBtn").disabled = true;
+
+            $("oldInfo").textContent = "";
+            $("newInfo").textContent = "";
+            $("stats").textContent = "";
+
+            $("diffTitle").textContent = "Select a row with ❌ to view differences.";
+            $("oldDiff").textContent = "";
+            $("newDiff").textContent = "";
+            $("resultsTable").querySelector("tbody").innerHTML = "";
+
+            if (!oldFile || !newFile) return;
+
+            try {
+                const [oldRows, newRows] = await Promise.all([readFile(oldFile), readFile(newFile)]);
+                state.oldRows = oldRows;
+                state.newRows = newRows;
+
+                const cols = Array.from(new Set([...getColumns(oldRows), ...getColumns(newRows)]));
+                state.cols = cols;
+
+                fillSelect($("colKey"), cols);
+                fillSelect($("colKey2"), cols);
+                fillSelect($("colCode"), cols);
+                fillSelect($("colAuthor"), cols);
+                fillSelect($("colDate"), cols);
+
+                $("colKey").value = guessColumn(cols, ["object", "object_name", "name", "objectname", "obj", "program", "class"]);
+                $("colKey2").value = guessColumn(cols, ["include", "method", "type", "component", "member"]);
+                $("colCode").value = guessColumn(cols, ["code", "snippet", "source", "body", "content"]);
+                $("colAuthor").value = guessColumn(cols, ["author", "createdby", "changedby", "user", "person"]);
+                $("colDate").value = guessColumn(cols, ["date", "changedon", "createdon", "timestamp", "time"]);
+
+                $("oldInfo").textContent = `${oldFile.name} (${oldRows.length} rows)`;
+                $("newInfo").textContent = `${newFile.name} (${newRows.length} rows)`;
+
+                $("compareBtn").disabled = false;
+            } catch (err) {
+                alert("Failed to read files: " + err.message);
+            }
+        }
+
+        function compare() {
+            const colKey = $("colKey").value;
+            const colKey2 = $("colKey2").value;
+            const colCode = $("colCode").value;
+
+            if (!colKey) { alert("Choose a key/object column."); return; }
+            if (!colCode) { alert("Choose a code snippet column."); return; }
+
+            const colAuthor = $("colAuthor").value;
+            const colDate = $("colDate").value;
+
+            const keyCols = colKey2 ? [colKey, colKey2] : [colKey];
+
+            const authorSet = linesToSet($("filterAuthors").value);
+            const objectSet = linesToSet($("filterObjects").value);
+
+            function passFilters(row) {
+                if (authorSet.size && colAuthor) {
+                    const a = (row?.[colAuthor] ?? "").toString().trim().toLowerCase();
+                    if (!authorSet.has(a)) return false;
+                }
+                if (objectSet.size) {
+                    const fullKey = buildKey(row, keyCols).toLowerCase();
+                    let ok = false;
+                    for (const o of objectSet) {
+                        if (fullKey.includes(o)) { ok = true; break; }
+                    }
+                    if (!ok) return false;
+                }
+                return true;
+            }
+
+            const oldFiltered = state.oldRows.filter(passFilters);
+            const newFiltered = state.newRows.filter(passFilters);
+
+            const oldMap = dedupeLatestByDate(oldFiltered, keyCols, colDate || "");
+            const newMap = dedupeLatestByDate(newFiltered, keyCols, colDate || "");
+
+            const allKeys = new Set([...oldMap.keys(), ...newMap.keys()]);
+
+            const results = [];
+            for (const key of allKeys) {
+                const o = oldMap.get(key);
+                const n = newMap.get(key);
+
+                const oldCode = normalizeCode(o?.[colCode] ?? "");
+                const newCode = normalizeCode(n?.[colCode] ?? "");
+
+                let status = "UNCHANGED";
+                if (o && !n) status = "REMOVED";
+                else if (!o && n) status = "ADDED";
+                else if (oldCode !== newCode) status = "CHANGED";
+
+                let preview = "";
+                if (status === "CHANGED") {
+                    const m = simpleLineDiff(oldCode, newCode);
+                    preview = `${m.sameLines}/${m.max} lines match (rough)`;
+                } else if (status === "ADDED") preview = "Only in new file";
+                else if (status === "REMOVED") preview = "Only in old file";
+                else preview = "Identical";
+
+                const keyPrimaryVal = (o?.[colKey] ?? n?.[colKey] ?? "").toString().trim();
+                const keySecondaryVal = colKey2 ? (o?.[colKey2] ?? n?.[colKey2] ?? "").toString().trim() : "";
+
+                results.push({
+                    key,
+                    keyPrimary: keyPrimaryVal,
+                    keySecondary: keySecondaryVal,
+                    status,
+                    oldAuthor: colAuthor ? (o?.[colAuthor] ?? "") : "",
+                    newAuthor: colAuthor ? (n?.[colAuthor] ?? "") : "",
+                    oldDate: colDate ? (o?.[colDate] ?? "") : "",
+                    newDate: colDate ? (n?.[colDate] ?? "") : "",
+                    oldCode,
+                    newCode,
+                    preview
+                });
+            }
+
+            const rank = { CHANGED: 0, ADDED: 1, REMOVED: 2, UNCHANGED: 3 };
+            results.sort((a, b) => (rank[a.status] ?? 9) - (rank[b.status] ?? 9) || a.key.localeCompare(b.key));
+
+            state.results = results;
+            updateStats();
+            applyViewFilters();
+
+            // export only diffs
+            const exportOnly = results.filter(r => r.status !== "UNCHANGED");
+            state.reportCsv = buildReportCsv(exportOnly);
+
+            $("exportCsvBtn").disabled = exportOnly.length === 0;
+            $("exportXlsxBtn").disabled = exportOnly.length === 0;
+        }
+
+        $("oldFile").addEventListener("change", handleFilesChanged);
+        $("newFile").addEventListener("change", handleFilesChanged);
+        $("compareBtn").addEventListener("click", compare);
+
+        $("exportCsvBtn").addEventListener("click", () => {
+            downloadText("compare_report.csv", state.reportCsv, "text/csv");
+        });
+
+        $("exportXlsxBtn").addEventListener("click", () => {
+            // export only diffs
+            const exportOnly = state.results.filter(r => r.status !== "UNCHANGED");
+            exportReportXlsx(exportOnly);
+        });
+
+        $("showOnly").addEventListener("change", applyViewFilters);
+        $("search").addEventListener("input", applyViewFilters);
+
+        (function enableSplitter() {
+            const splitRow = document.querySelector(".splitRow");
+            const splitter = document.getElementById("splitter");
+            if (!splitRow || !splitter) return;
+
+            let dragging = false;
+
+            const minLeft = 360;
+            const minRight = 420;
+            const splitterW = 18;
+
+            let ratio = null;
+
+            function getGapPx() {
+                const cs = getComputedStyle(splitRow);
+                const g = parseFloat(cs.columnGap || cs.gap || "0");
+                return Number.isFinite(g) ? g : 0;
+            }
+
+            function applyColsFromLeft(leftPx) {
+                const gap = getGapPx();
+                const total = splitRow.getBoundingClientRect().width;
+                const usableTotal = total - (2 * gap);
+
+                const maxLeft = usableTotal - splitterW - minRight;
+
+                const clampedLeft = Math.max(minLeft, Math.min(leftPx, maxLeft));
+                const right = Math.max(minRight, usableTotal - splitterW - clampedLeft);
+
+                splitRow.style.gridTemplateColumns = `${clampedLeft}px ${splitterW}px ${right}px`;
+
+                const usable = usableTotal - splitterW;
+                ratio = usable > 0 ? (clampedLeft / usable) : null;
+            }
+
+            function applyColsFromRatio() {
+                if (ratio == null) return;
+
+                const gap = getGapPx();
+                const total = splitRow.getBoundingClientRect().width;
+                const usableTotal = total - (2 * gap);
+
+                const usable = usableTotal - splitterW;
+                if (usable <= 0) return;
+
+                const leftPx = usable * ratio;
+                applyColsFromLeft(leftPx);
+            }
+
+            splitter.addEventListener("mousedown", (e) => {
+                dragging = true;
+                splitter.classList.add("dragging");
+                document.body.style.userSelect = "none";
+                document.body.style.cursor = "col-resize";
+                e.preventDefault();
+            });
+
+            window.addEventListener("mousemove", (e) => {
+                if (!dragging) return;
+                const rect = splitRow.getBoundingClientRect();
+                const leftPx = e.clientX - rect.left;
+                applyColsFromLeft(leftPx);
+            });
+
+            window.addEventListener("mouseup", () => {
+                if (!dragging) return;
+                dragging = false;
+                splitter.classList.remove("dragging");
+                document.body.style.userSelect = "";
+                document.body.style.cursor = "";
+            });
+
+            window.addEventListener("resize", () => {
+                applyColsFromRatio();
+            });
+
+            splitter.addEventListener("dblclick", () => {
+                ratio = null;
+                splitRow.style.gridTemplateColumns = "";
+            });
+        })();
+    </script>
+</body>
+
+</html>
