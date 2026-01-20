@@ -147,6 +147,41 @@
             outline: none;
         }
 
+        /* --- Fix checkbox looking like a full-width input --- */
+        input[type="checkbox"]{
+        width: auto !important;
+        padding: 0 !important;
+        border-radius: 4px !important;
+        border: 1px solid rgba(255,255,255,0.25) !important;
+        background: rgba(255,255,255,0.06) !important;
+        appearance: auto;
+        -webkit-appearance: auto;
+        }
+
+        /* Better layout for the ignore row */
+        .filtersBlank{
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.03);
+        width: fit-content;
+        }
+
+        .filtersBlank:hover{
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.14);
+        }
+
+        .filtersBlank span{
+        color: rgba(231,238,252,0.82);
+        font-size: 12px;
+        white-space: nowrap;
+        }
+
+
         option {
             background: #101a2e;
             color: var(--text);
@@ -196,6 +231,18 @@
             cursor: not-allowed;
         }
 
+        .btnGhost {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(231, 238, 252, 0.92);
+            padding: 10px 12px;
+            font-weight: 600;
+        }
+
+        .btnGhost:hover {
+            background: rgba(255, 255, 255, 0.10);
+        }
+
         .tablewrap {
             overflow: auto;
             border-radius: 12px;
@@ -225,10 +272,17 @@
             text-align: left;
             font-size: 12px;
             letter-spacing: .02em;
+            z-index: 1;
         }
 
         tr:hover {
             background: rgba(255, 255, 255, 0.04);
+        }
+
+        tr.selected {
+            background: rgba(43, 108, 255, 0.10);
+            outline: 1px solid rgba(43, 108, 255, 0.30);
+            outline-offset: -1px;
         }
 
         .pill {
@@ -264,6 +318,36 @@
         .mono {
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
             font-size: 12px;
+        }
+
+        .keyCell {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .keyText {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .copyBtn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(231, 238, 252, 0.92);
+            padding: 6px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .copyBtn:hover {
+            background: rgba(255, 255, 255, 0.10);
         }
 
         .diffbox {
@@ -318,7 +402,6 @@
             position: relative;
             z-index: 1;
             box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
-            /* make it easier to hit */
             touch-action: none;
         }
 
@@ -367,6 +450,111 @@
             opacity: .9;
         }
 
+        .line.empty {
+            opacity: 0.55;
+        }
+
+        .pager {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .pager .spacer {
+            flex: 1 1 auto;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 18px;
+            left: 18px;
+            background: rgba(20, 28, 48, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(231, 238, 252, 0.92);
+            padding: 10px 12px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            font-size: 12px;
+            opacity: 0;
+            transform: translateY(6px);
+            pointer-events: none;
+            transition: opacity 140ms ease, transform 140ms ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+
+        /* Filters footer: stacked, clean, never awkward */
+        .filtersBar{
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 12px;
+        }
+
+        .filtersShowRow{
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        min-width: 0;
+        }
+
+        .filtersShowRow select{
+        width: 220px;
+        }
+
+        .filtersSearchRow{
+        display: flex;
+        gap: 10px;
+        align-items: center;   /* <- key: vertical alignment */
+        min-width: 0;
+        }
+
+        .filtersSearchRow .searchLabel{
+        color: var(--muted);
+        font-size: 12px;
+        white-space: nowrap;
+        margin: 0;             /* <- key: no inherited label margins */
+        line-height: 1;        /* <- keeps it centered */
+        padding-top: 1px;      /* tiny nudge to match input baseline */
+        display: inline-block;
+        }
+
+        .filtersSearchRow input{
+        flex: 1;
+        min-width: 0;
+        }
+
+
+        /* Small screens: make Show dropdown full width */
+        @media (max-width: 520px){
+        .filtersShowRow{
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .filtersShowRow select{
+            width: 100%;
+        }
+        }
+
+
+        /* Small: dropdown full width */
+        @media (max-width: 520px){
+        .filtersShow{
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .filtersShow select{
+            width: 100% !important;
+        }
+        }
+
+
         @media (max-width: 980px) {
             body {
                 margin: 14px;
@@ -409,11 +597,6 @@
                 margin-left: 0;
             }
 
-            #showOnly,
-            #search {
-                width: 100% !important;
-            }
-
             table {
                 min-width: 760px;
             }
@@ -424,8 +607,7 @@
 <body>
     <h1>Local CSV/XLSX Code Comparator</h1>
     <p class="sub">
-        Upload old + new exports, map columns, filter by author/object, then compare by key.
-        Default comparison trims trailing spaces per line.
+        Upload old + new exports, map columns, filter by author/object, choose normalization, then compare by key.
     </p>
 
     <div class="row">
@@ -492,9 +674,27 @@
                     </div>
                     <select id="colDate"></select>
                 </div>
+
+                <div>
+                    <div class="labelRow">
+                        <label>Normalize</label>
+                        <span class="badge opt">Optional</span>
+                    </div>
+                    <select id="normalizeMode">
+                        <option value="trim">Trim trailing spaces (default)</option>
+                        <option value="none">No normalization</option>
+                        <option value="collapse_ws">Collapse whitespace (aggressive)</option>
+                        <option value="strip_comments_abap">Strip ABAP comments (naive)</option>
+                    </select>
+                </div>
             </div>
 
             <div class="controls">
+                <label class="filtersBlank" style="margin:0;">
+                    <input type="checkbox" id="ignoreBlankLines" />
+                    <span>Ignore blank lines</span>
+                </label>
+
                 <button id="compareBtn" class="right" disabled type="button">Compare</button>
             </div>
         </div>
@@ -513,23 +713,27 @@
                 </div>
             </div>
 
-            <div class="controls">
-                <label style="margin:0;color:var(--muted);">Show</label>
-                <select id="showOnly" style="width:220px;">
-                    <option value="all">All</option>
-                    <option value="changed">Changed only</option>
-                    <option value="unchanged">Unchanged only</option>
-                    <option value="added">Added in new</option>
-                    <option value="removed">Removed in new</option>
-                </select>
-
-                <input id="search" class="right" style="width:240px;" placeholder="Search key/object..." />
+            <div class="filtersBar">
+                <div class="filtersShowRow">
+                    <label style="margin:0;color:var(--muted);">Show</label>
+                    <select id="showOnly">
+                        <option value="all">All</option>
+                        <option value="changed">Changed only</option>
+                        <option value="unchanged">Unchanged only</option>
+                        <option value="added">Added in new</option>
+                        <option value="removed">Removed in new</option>
+                    </select>
+                </div>
+            
+                <div class="filtersSearchRow">
+                    <span class="searchLabel">Search</span>
+                    <input id="search" placeholder="key/object..." />
+                </div>
             </div>
         </div>
     </div>
 
     <div class="splitRow" style="margin-top: 16px;">
-
         <div class="card" id="resultsCard">
             <h2>Results</h2>
             <div class="controls">
@@ -556,6 +760,20 @@
                 </table>
             </div>
 
+            <div class="pager">
+                <button id="prevPageBtn" class="btnGhost" type="button" disabled>Prev</button>
+                <button id="nextPageBtn" class="btnGhost" type="button" disabled>Next</button>
+                <div class="muted" id="pageInfo"></div>
+                <div class="spacer"></div>
+                <label style="margin:0;color:var(--muted);">Page size</label>
+                <select id="pageSize" style="width:120px;">
+                    <option>50</option>
+                    <option>100</option>
+                    <option>200</option>
+                    <option>500</option>
+                </select>
+            </div>
+
             <p class="muted" style="margin-top:10px;">Click a row to see full side-by-side diff.</p>
         </div>
 
@@ -576,26 +794,41 @@
                 </div>
             </div>
         </div>
-
     </div>
+
+    <div class="toast" id="toast"></div>
 
     <!-- CSV parser -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <!-- XLSX parser + writer (style-enabled) -->
+    <!-- XLSX parser + writer -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Proper diff library (line-based) -->
+    <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
 
-
-    <!-- JS -->
     <script>
         const state = {
             oldRows: [],
             newRows: [],
             cols: [],
-            results: [],
-            reportCsv: ""
+            results: [],              // metadata only (no huge code blobs)
+            oldMap: new Map(),        // key -> row
+            newMap: new Map(),        // key -> row
+            reportCsv: "",
+            // paging + view
+            viewRows: [],
+            page: 1,
+            pageSize: 50,
+            selectedKey: null
         };
 
         const $ = (id) => document.getElementById(id);
+
+        function showToast(msg) {
+            const el = $("toast");
+            el.textContent = msg;
+            el.classList.add("show");
+            setTimeout(() => el.classList.remove("show"), 950);
+        }
 
         function linesToSet(text) {
             return new Set(
@@ -607,9 +840,68 @@
             );
         }
 
-        function normalizeCode(code) {
-            const s = (code ?? "").toString().replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-            return s.split("\n").map(line => line.replace(/\s+$/g, "")).join("\n");
+        // Safe key encoding: JSON array of trimmed parts (prevents delimiter collisions)
+        function buildKey(row, keyCols) {
+            const parts = keyCols.map(c => (row?.[c] ?? "").toString().trim());
+            return JSON.stringify(parts);
+        }
+
+        function getColumns(rows) {
+            const cols = new Set();
+            rows.forEach(r => Object.keys(r || {}).forEach(k => cols.add(k)));
+            return Array.from(cols);
+        }
+
+        function fillSelect(selectEl, cols) {
+            selectEl.innerHTML = "";
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "(none)";
+            selectEl.appendChild(opt);
+
+            cols.forEach(c => {
+                const o = document.createElement("option");
+                o.value = c;
+                o.textContent = c;
+                selectEl.appendChild(o);
+            });
+        }
+
+        function guessColumn(cols, patterns) {
+            const lc = cols.map(c => ({ c, lc: c.toLowerCase() }));
+            for (const p of patterns) {
+                const hit = lc.find(x => x.lc === p) || lc.find(x => x.lc.includes(p));
+                if (hit) return hit.c;
+            }
+            return "";
+        }
+
+        // More robust date parsing than Date.parse for common export formats
+        function parseDateMaybe(v) {
+            const s = (v ?? "").toString().trim();
+            if (!s) return null;
+
+            // ISO-ish: 2025-11-20 14:30 or 2025-11-20T14:30:00
+            let m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+            if (m) {
+                const y = +m[1], mo = +m[2], d = +m[3];
+                const hh = +(m[4] ?? 0), mm = +(m[5] ?? 0), ss = +(m[6] ?? 0);
+                const t = Date.UTC(y, mo - 1, d, hh, mm, ss);
+                return Number.isFinite(t) ? t : null;
+            }
+
+            // EU-ish: 20-11-2025 14:30 or 20/11/2025
+            m = s.match(/^(\d{2})[\/.-](\d{2})[\/.-](\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+            if (m) {
+                const d = +m[1], mo = +m[2], y = +m[3];
+                const hh = +(m[4] ?? 0), mm = +(m[5] ?? 0), ss = +(m[6] ?? 0);
+                const t = Date.UTC(y, mo - 1, d, hh, mm, ss);
+                return Number.isFinite(t) ? t : null;
+            }
+
+            // Fallback
+            const t = Date.parse(s);
+            return Number.isFinite(t) ? t : null;
         }
 
         function readFile(file) {
@@ -649,43 +941,61 @@
             return Promise.reject(new Error("Unsupported file type"));
         }
 
-        function getColumns(rows) {
-            const cols = new Set();
-            rows.forEach(r => Object.keys(r || {}).forEach(k => cols.add(k)));
-            return Array.from(cols);
-        }
+        function stripInlineAbapCommentSafish(line) {
+            const s = (line ?? "").toString();
+            let out = "";
+            let inSingle = false;
 
-        function fillSelect(selectEl, cols) {
-            selectEl.innerHTML = "";
-            const opt = document.createElement("option");
-            opt.value = "";
-            opt.textContent = "(none)";
-            selectEl.appendChild(opt);
+            for (let i = 0; i < s.length; i++) {
+                const ch = s[i];
 
-            cols.forEach(c => {
-                const o = document.createElement("option");
-                o.value = c;
-                o.textContent = c;
-                selectEl.appendChild(o);
-            });
-        }
+                if (ch === "'") {
+                    // ABAP string escape: '' inside string
+                    if (inSingle && i + 1 < s.length && s[i + 1] === "'") {
+                        out += "''";
+                        i++;
+                        continue;
+                    }
+                    inSingle = !inSingle;
+                    out += ch;
+                    continue;
+                }
 
-        function guessColumn(cols, patterns) {
-            const lc = cols.map(c => ({ c, lc: c.toLowerCase() }));
-            for (const p of patterns) {
-                const hit = lc.find(x => x.lc === p) || lc.find(x => x.lc.includes(p));
-                if (hit) return hit.c;
+                if (ch === '"' && !inSingle) {
+                    return out.replace(/\s+$/g, "");
+                }
+
+                out += ch;
             }
-            return "";
+            return out.replace(/\s+$/g, "");
         }
 
-        function parseDateMaybe(v) {
-            const t = Date.parse(v);
-            return Number.isFinite(t) ? t : null;
-        }
+        function normalizeCode(code, mode, ignoreBlankLines) {
+            const s = (code ?? "").toString().replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
-        function buildKey(row, keyCols) {
-            return keyCols.map(c => (row?.[c] ?? "").toString().trim()).join("||");
+            let out = s;
+
+            if (mode === "none") {
+                out = s;
+            } else if (mode === "trim") {
+                out = s.split("\n").map(line => line.replace(/\s+$/g, "")).join("\n");
+            } else if (mode === "collapse_ws") {
+                out = s.replace(/\s+/g, " ").trim();
+            } else if (mode === "strip_comments_abap") {
+                const lines = [];
+                for (const line of s.split("\n")) {
+                    const raw = line.replace(/\s+$/g, "");
+                    if (raw.trimStart().startsWith("*")) continue;
+                    lines.push(stripInlineAbapCommentSafish(raw));
+                }
+                out = lines.join("\n");
+            }
+
+            if (ignoreBlankLines) {
+                out = out.split("\n").filter(ln => ln.trim() !== "").join("\n");
+            }
+
+            return out;
         }
 
         function dedupeLatestByDate(rows, keyCols, dateCol) {
@@ -712,50 +1022,6 @@
             return map;
         }
 
-        function simpleLineDiff(oldText, newText) {
-            const a = oldText.split("\n");
-            const b = newText.split("\n");
-            const max = Math.max(a.length, b.length);
-            let sameLines = 0;
-            for (let i = 0; i < max; i++) {
-                if ((a[i] ?? "") === (b[i] ?? "")) sameLines++;
-            }
-            return { sameLines, max };
-        }
-
-        function renderDiff(preEl, text, classesByLine) {
-            preEl.textContent = "";
-            const frag = document.createDocumentFragment();
-            const lines = text.split("\n");
-            lines.forEach((line, idx) => {
-                const span = document.createElement("span");
-                span.className = "line " + (classesByLine[idx] || "same");
-                span.textContent = line + (idx === lines.length - 1 ? "" : "\n");
-                frag.appendChild(span);
-            });
-            preEl.appendChild(frag);
-        }
-
-        function computeSideBySideHighlight(oldText, newText) {
-            const a = oldText.split("\n");
-            const b = newText.split("\n");
-            const max = Math.max(a.length, b.length);
-            const aCls = [];
-            const bCls = [];
-            for (let i = 0; i < max; i++) {
-                const al = a[i] ?? "";
-                const bl = b[i] ?? "";
-                if (al === bl) {
-                    aCls.push("same");
-                    bCls.push("same");
-                } else {
-                    aCls.push("del");
-                    bCls.push("add");
-                }
-            }
-            return { aCls, bCls };
-        }
-
         function statusPill(status) {
             if (status === "UNCHANGED") return `<span class="pill ok">✅ Same</span>`;
             if (status === "CHANGED") return `<span class="pill bad">❌ Diff</span>`;
@@ -764,7 +1030,79 @@
             return status;
         }
 
-        function buildReportCsv(results) {
+        // Proper line diff -> aligned rows for side-by-side rendering
+        function buildAlignedDiff(oldText, newText) {
+            const parts = Diff.diffLines(oldText, newText); // line-based diff
+            const oldLines = [];
+            const newLines = [];
+            const oldCls = [];
+            const newCls = [];
+
+            for (const p of parts) {
+                const lines = (p.value ?? "").split("\n");
+                // diffLines keeps trailing newline in the "value", which creates a trailing ""
+                // We'll keep alignment stable by removing the last empty line only if it's from split end.
+                if (lines.length && lines[lines.length - 1] === "") lines.pop();
+
+                if (p.added) {
+                    for (const ln of lines) {
+                        oldLines.push("");
+                        newLines.push(ln);
+                        oldCls.push("empty");
+                        newCls.push("add");
+                    }
+                } else if (p.removed) {
+                    for (const ln of lines) {
+                        oldLines.push(ln);
+                        newLines.push("");
+                        oldCls.push("del");
+                        newCls.push("empty");
+                    }
+                } else {
+                    for (const ln of lines) {
+                        oldLines.push(ln);
+                        newLines.push(ln);
+                        oldCls.push("same");
+                        newCls.push("same");
+                    }
+                }
+            }
+
+            // preview metrics
+            let same = 0;
+            for (let i = 0; i < oldLines.length; i++) {
+                if (oldCls[i] === "same" && newCls[i] === "same") same++;
+            }
+
+            return { oldLines, newLines, oldCls, newCls, sameLines: same, totalLines: oldLines.length };
+        }
+
+        function renderDiff(preEl, lines, classes) {
+            preEl.textContent = "";
+            const frag = document.createDocumentFragment();
+            for (let i = 0; i < lines.length; i++) {
+                const span = document.createElement("span");
+                span.className = "line " + (classes[i] || "same");
+                span.textContent = lines[i] + (i === lines.length - 1 ? "" : "\n");
+                frag.appendChild(span);
+            }
+            preEl.appendChild(frag);
+        }
+
+        function getCodeForKey(key) {
+            const colCode = $("colCode").value;
+            const mode = $("normalizeMode").value;
+            const ignoreBlankLines = $("ignoreBlankLines").checked;
+
+            const o = state.oldMap.get(key);
+            const n = state.newMap.get(key);
+
+            const oldCode = normalizeCode(o?.[colCode] ?? "", mode, ignoreBlankLines);
+            const newCode = normalizeCode(n?.[colCode] ?? "", mode, ignoreBlankLines);
+            return { oldCode, newCode };
+        }
+
+        function buildReportCsv(rows) {
             const header = [
                 "Status", "Key", "SecondaryKey",
                 "OldAuthor", "NewAuthor",
@@ -772,9 +1110,16 @@
                 "OldCode", "NewCode"
             ];
 
-            const rows = results
-                .filter(r => r.status !== "UNCHANGED")
-                .map(r => [
+            const esc = (v) => `"${String(v).replaceAll('"', '""')}"`;
+
+            const lines = [];
+            lines.push(header.map(esc).join(","));
+
+            for (const r of rows) {
+                // Export only diffs (UNCHANGED excluded by caller)
+                const { oldCode, newCode } = getCodeForKey(r.key);
+
+                lines.push([
                     r.status,
                     r.keyPrimary ?? "",
                     r.keySecondary ?? "",
@@ -782,16 +1127,12 @@
                     r.newAuthor ?? "",
                     r.oldDate ?? "",
                     r.newDate ?? "",
-                    r.oldCode ?? "",
-                    r.newCode ?? ""
-                ]);
+                    oldCode ?? "",
+                    newCode ?? ""
+                ].map(esc).join(","));
+            }
 
-            const esc = (v) => `"${String(v).replaceAll('"', '""')}"`;
-
-            return [
-                header.map(esc).join(","),
-                ...rows.map(row => row.map(esc).join(","))
-            ].join("\n");
+            return lines.join("\n");
         }
 
         function downloadText(filename, text, mime = "text/plain") {
@@ -806,72 +1147,85 @@
             URL.revokeObjectURL(url);
         }
 
-        function exportReportXlsx(results) {
-                try {
-                    const headers = [
-                        "Status", "Key", "SecondaryKey", "OldAuthor", "NewAuthor",
-                        "OldDate", "NewDate", "OldCode", "NewCode"
-                    ];
+        function exportReportXlsx(rows) {
+            try {
+                const headers = [
+                    "Status", "Key", "SecondaryKey", "OldAuthor", "NewAuthor",
+                    "OldDate", "NewDate", "OldCode", "NewCode"
+                ];
 
-                    const rows = results
-                        .filter(r => r.status !== "UNCHANGED")
-                        .map(r => ([
-                            r.status,
-                            r.keyPrimary ?? "",
-                            r.keySecondary ?? "",
-                            r.oldAuthor ?? "",
-                            r.newAuthor ?? "",
-                            r.oldDate ?? "",
-                            r.newDate ?? "",
-                            r.oldCode ?? "",
-                            r.newCode ?? ""
-                        ]));
+                const aoa = [headers];
 
-                    // ✅ Works even when json_to_sheet doesn't exist
-                    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-
-                    ws["!cols"] = [
-                        { wch: 10 }, { wch: 22 }, { wch: 16 }, { wch: 16 }, { wch: 16 },
-                        { wch: 18 }, { wch: 18 }, { wch: 60 }, { wch: 60 }
-                    ];
-
-                    const range = XLSX.utils.decode_range(ws["!ref"] || "A1:A1");
-                    ws["!autofilter"] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 0, c: range.e.c } }) };
-
-                    const headerStyle = {
-                        font: { bold: true, color: { rgb: "FFFFFF" } },
-                        fill: { fgColor: { rgb: "1F2A44" } },
-                        alignment: { vertical: "center", horizontal: "center", wrapText: true },
-                        border: {
-                            top: { style: "thin", color: { rgb: "2D3A55" } },
-                            bottom: { style: "thin", color: { rgb: "2D3A55" } },
-                            left: { style: "thin", color: { rgb: "2D3A55" } },
-                            right: { style: "thin", color: { rgb: "2D3A55" } },
-                        }
-                    };
-
-                    for (let c = range.s.c; c <= range.e.c; c++) {
-                        const addr = XLSX.utils.encode_cell({ r: 0, c });
-                        if (ws[addr]) ws[addr].s = headerStyle;
-                    }
-
-                    const wrapStyle = { alignment: { vertical: "top", wrapText: true } };
-                    for (let r = 1; r <= range.e.r; r++) {
-                        for (const c of [7, 8]) { // OldCode, NewCode
-                            const addr = XLSX.utils.encode_cell({ r, c });
-                            if (ws[addr]) ws[addr].s = wrapStyle;
-                        }
-                    }
-
-                    const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, "Diff report");
-                    XLSX.writeFile(wb, "compare_report.xlsx");
-                } catch (e) {
-                    alert("XLSX export failed: " + (e?.message || e));
-                    console.error(e);
+                for (const r of rows) {
+                    const { oldCode, newCode } = getCodeForKey(r.key);
+                    aoa.push([
+                        r.status,
+                        r.keyPrimary ?? "",
+                        r.keySecondary ?? "",
+                        r.oldAuthor ?? "",
+                        r.newAuthor ?? "",
+                        r.oldDate ?? "",
+                        r.newDate ?? "",
+                        oldCode ?? "",
+                        newCode ?? ""
+                    ]);
                 }
-            }
 
+                const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+                ws["!cols"] = [
+                    { wch: 10 }, { wch: 22 }, { wch: 16 }, { wch: 16 }, { wch: 16 },
+                    { wch: 18 }, { wch: 18 }, { wch: 60 }, { wch: 60 }
+                ];
+
+                const range = XLSX.utils.decode_range(ws["!ref"] || "A1:A1");
+                ws["!autofilter"] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 0, c: range.e.c } }) };
+
+                // NOTE: Styling support can vary depending on the build of the XLSX library.
+                // This is safe to keep, but some viewers may ignore it.
+                const headerStyle = {
+                    font: { bold: true, color: { rgb: "FFFFFF" } },
+                    fill: { fgColor: { rgb: "1F2A44" } },
+                    alignment: { vertical: "center", horizontal: "center", wrapText: true },
+                    border: {
+                        top: { style: "thin", color: { rgb: "2D3A55" } },
+                        bottom: { style: "thin", color: { rgb: "2D3A55" } },
+                        left: { style: "thin", color: { rgb: "2D3A55" } },
+                        right: { style: "thin", color: { rgb: "2D3A55" } },
+                    }
+                };
+
+                for (let c = range.s.c; c <= range.e.c; c++) {
+                    const addr = XLSX.utils.encode_cell({ r: 0, c });
+                    if (ws[addr]) ws[addr].s = headerStyle;
+                }
+
+                const wrapStyle = { alignment: { vertical: "top", wrapText: true } };
+                for (let r = 1; r <= range.e.r; r++) {
+                    for (const c of [7, 8]) { // OldCode, NewCode
+                        const addr = XLSX.utils.encode_cell({ r, c });
+                        if (ws[addr]) ws[addr].s = wrapStyle;
+                    }
+                }
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Diff report");
+                XLSX.writeFile(wb, "compare_report.xlsx");
+            } catch (e) {
+                alert("XLSX export failed: " + (e?.message || e));
+                console.error(e);
+            }
+        }
+
+        function updateStats() {
+            const counts = state.results.reduce((acc, r) => {
+                acc[r.status] = (acc[r.status] || 0) + 1;
+                return acc;
+            }, {});
+            $("stats").textContent =
+                `Total: ${state.results.length} | ` +
+                `✅ ${counts.UNCHANGED || 0} | ❌ ${counts.CHANGED || 0} | ➕ ${counts.ADDED || 0} | ➖ ${counts.REMOVED || 0}`;
+        }
 
         function applyViewFilters() {
             const mode = $("showOnly").value;
@@ -889,8 +1243,34 @@
                 });
             }
 
-            if (q) rows = rows.filter(r => (r.key || "").toLowerCase().includes(q));
-            renderResultsTable(rows);
+            if (q) {
+                rows = rows.filter(r => {
+                    const keyText = (r.keyPrimary || r.key || "").toLowerCase();
+                    const full = (r.key || "").toLowerCase();
+                    return keyText.includes(q) || full.includes(q);
+                });
+            }
+
+            state.viewRows = rows;
+            state.page = 1;
+            renderCurrentPage();
+        }
+
+        function renderCurrentPage() {
+            const pageSize = state.pageSize;
+            const total = state.viewRows.length;
+            const maxPage = Math.max(1, Math.ceil(total / pageSize));
+            state.page = Math.min(state.page, maxPage);
+
+            const start = (state.page - 1) * pageSize;
+            const end = Math.min(total, start + pageSize);
+            const slice = state.viewRows.slice(start, end);
+
+            renderResultsTable(slice);
+
+            $("prevPageBtn").disabled = state.page <= 1;
+            $("nextPageBtn").disabled = state.page >= maxPage;
+            $("pageInfo").textContent = `page ${state.page}/${maxPage}`;
         }
 
         function renderResultsTable(rows) {
@@ -899,38 +1279,80 @@
 
             rows.forEach((r) => {
                 const tr = document.createElement("tr");
+                if (state.selectedKey === r.key) tr.classList.add("selected");
+
+                const keyPrimaryText = r.keyPrimary || r.key;
                 tr.innerHTML = `
           <td>${statusPill(r.status)}</td>
-          <td class="mono">${r.key}</td>
-          <td>${r.oldAuthor ?? ""}</td>
-          <td>${r.newAuthor ?? ""}</td>
-          <td>${r.oldDate ?? ""}</td>
-          <td>${r.newDate ?? ""}</td>
-          <td class="muted">${r.preview ?? ""}</td>
+          <td class="mono">
+            <div class="keyCell">
+              <span class="keyText" title="${escapeHtml(keyPrimaryText)}">${escapeHtml(keyPrimaryText)}</span>
+              <button class="copyBtn" type="button" title="Copy key">⧉</button>
+            </div>
+          </td>
+          <td>${escapeHtml(r.oldAuthor ?? "")}</td>
+          <td>${escapeHtml(r.newAuthor ?? "")}</td>
+          <td>${escapeHtml(r.oldDate ?? "")}</td>
+          <td>${escapeHtml(r.newDate ?? "")}</td>
+          <td class="muted">${escapeHtml(r.preview ?? "")}</td>
         `;
 
-                tr.addEventListener("click", () => {
-                    $("diffTitle").textContent = `${r.status}: ${r.key}`;
-                    const oldText = r.oldCode ?? "";
-                    const newText = r.newCode ?? "";
+                // copy key button
+                tr.querySelector(".copyBtn").addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        await navigator.clipboard.writeText(keyPrimaryText);
+                        showToast("Copied key");
+                    } catch {
+                        // fallback
+                        downloadText("key.txt", keyPrimaryText, "text/plain");
+                        showToast("Clipboard blocked, downloaded key.txt");
+                    }
+                });
 
-                    const { aCls, bCls } = computeSideBySideHighlight(oldText, newText);
-                    renderDiff($("oldDiff"), oldText, aCls);
-                    renderDiff($("newDiff"), newText, bCls);
+                tr.addEventListener("click", () => {
+                    selectRowAndRenderDiff(r.key);
                 });
 
                 tbody.appendChild(tr);
             });
         }
 
-        function updateStats() {
-            const counts = state.results.reduce((acc, r) => {
-                acc[r.status] = (acc[r.status] || 0) + 1;
-                return acc;
-            }, {});
-            $("stats").textContent =
-                `Total: ${state.results.length} | ` +
-                `✅ ${counts.UNCHANGED || 0} | ❌ ${counts.CHANGED || 0} | ➕ ${counts.ADDED || 0} | ➖ ${counts.REMOVED || 0}`;
+        function escapeHtml(str) {
+            return String(str)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function clearDiff() {
+            $("diffTitle").textContent = "Select a row with ❌ to view differences.";
+            $("oldDiff").textContent = "";
+            $("newDiff").textContent = "";
+            state.selectedKey = null;
+        }
+
+        function selectRowAndRenderDiff(key) {
+            state.selectedKey = key;
+
+            // Update row highlighting
+            const tbody = $("resultsTable").querySelector("tbody");
+            Array.from(tbody.querySelectorAll("tr")).forEach(tr => tr.classList.remove("selected"));
+            // Re-render page so selection aligns even when paging/filtering changes
+            renderCurrentPage();
+
+            const row = state.results.find(x => x.key === key);
+            if (!row) return;
+
+            $("diffTitle").textContent = `${row.status}: ${row.keyPrimary || row.key}`;
+
+            const { oldCode, newCode } = getCodeForKey(key);
+            const aligned = buildAlignedDiff(oldCode, newCode);
+
+            renderDiff($("oldDiff"), aligned.oldLines, aligned.oldCls);
+            renderDiff($("newDiff"), aligned.newLines, aligned.newCls);
         }
 
         async function handleFilesChanged() {
@@ -941,6 +1363,12 @@
             state.newRows = [];
             state.cols = [];
             state.results = [];
+            state.oldMap = new Map();
+            state.newMap = new Map();
+            state.reportCsv = "";
+            state.viewRows = [];
+            state.page = 1;
+            state.selectedKey = null;
 
             $("compareBtn").disabled = true;
             $("exportCsvBtn").disabled = true;
@@ -949,10 +1377,9 @@
             $("oldInfo").textContent = "";
             $("newInfo").textContent = "";
             $("stats").textContent = "";
+            $("pageInfo").textContent = "";
 
-            $("diffTitle").textContent = "Select a row with ❌ to view differences.";
-            $("oldDiff").textContent = "";
-            $("newDiff").textContent = "";
+            clearDiff();
             $("resultsTable").querySelector("tbody").innerHTML = "";
 
             if (!oldFile || !newFile) return;
@@ -996,6 +1423,8 @@
 
             const colAuthor = $("colAuthor").value;
             const colDate = $("colDate").value;
+            const mode = $("normalizeMode").value;
+            const ignoreBlankLines = $("ignoreBlankLines").checked;
 
             const keyCols = colKey2 ? [colKey, colKey2] : [colKey];
 
@@ -1008,6 +1437,7 @@
                     if (!authorSet.has(a)) return false;
                 }
                 if (objectSet.size) {
+                    // Keep UI behavior as you already had (substring match against full composite key)
                     const fullKey = buildKey(row, keyCols).toLowerCase();
                     let ok = false;
                     for (const o of objectSet) {
@@ -1024,6 +1454,9 @@
             const oldMap = dedupeLatestByDate(oldFiltered, keyCols, colDate || "");
             const newMap = dedupeLatestByDate(newFiltered, keyCols, colDate || "");
 
+            state.oldMap = oldMap;
+            state.newMap = newMap;
+
             const allKeys = new Set([...oldMap.keys(), ...newMap.keys()]);
 
             const results = [];
@@ -1031,8 +1464,8 @@
                 const o = oldMap.get(key);
                 const n = newMap.get(key);
 
-                const oldCode = normalizeCode(o?.[colCode] ?? "");
-                const newCode = normalizeCode(n?.[colCode] ?? "");
+                const oldCode = normalizeCode(o?.[colCode] ?? "", mode, ignoreBlankLines);
+                const newCode = normalizeCode(n?.[colCode] ?? "", mode, ignoreBlankLines);
 
                 let status = "UNCHANGED";
                 if (o && !n) status = "REMOVED";
@@ -1041,8 +1474,8 @@
 
                 let preview = "";
                 if (status === "CHANGED") {
-                    const m = simpleLineDiff(oldCode, newCode);
-                    preview = `${m.sameLines}/${m.max} lines match (rough)`;
+                    const aligned = buildAlignedDiff(oldCode, newCode);
+                    preview = `${aligned.sameLines}/${aligned.totalLines} lines match`;
                 } else if (status === "ADDED") preview = "Only in new file";
                 else if (status === "REMOVED") preview = "Only in old file";
                 else preview = "Identical";
@@ -1059,27 +1492,47 @@
                     newAuthor: colAuthor ? (n?.[colAuthor] ?? "") : "",
                     oldDate: colDate ? (o?.[colDate] ?? "") : "",
                     newDate: colDate ? (n?.[colDate] ?? "") : "",
-                    oldCode,
-                    newCode,
                     preview
                 });
             }
 
             const rank = { CHANGED: 0, ADDED: 1, REMOVED: 2, UNCHANGED: 3 };
-            results.sort((a, b) => (rank[a.status] ?? 9) - (rank[b.status] ?? 9) || a.key.localeCompare(b.key));
+            results.sort((a, b) =>
+                (rank[a.status] ?? 9) - (rank[b.status] ?? 9) ||
+                (a.keyPrimary || a.key).localeCompare(b.keyPrimary || b.key)
+            );
 
             state.results = results;
+
             updateStats();
             applyViewFilters();
 
-            // export only diffs
-            const exportOnly = results.filter(r => r.status !== "UNCHANGED");
+            // Export only diffs
+            const exportOnly = state.results.filter(r => r.status !== "UNCHANGED");
             state.reportCsv = buildReportCsv(exportOnly);
 
             $("exportCsvBtn").disabled = exportOnly.length === 0;
             $("exportXlsxBtn").disabled = exportOnly.length === 0;
+
+            // Auto-select first CHANGED row
+            const firstChanged = state.results.find(r => r.status === "CHANGED");
+            if (firstChanged) {
+                selectRowAndRenderDiff(firstChanged.key);
+            } else {
+                clearDiff();
+            }
         }
 
+        // Debounce helper (for search)
+        function debounce(fn, ms) {
+            let t = null;
+            return (...args) => {
+                if (t) clearTimeout(t);
+                t = setTimeout(() => fn(...args), ms);
+            };
+        }
+
+        // Events
         $("oldFile").addEventListener("change", handleFilesChanged);
         $("newFile").addEventListener("change", handleFilesChanged);
         $("compareBtn").addEventListener("click", compare);
@@ -1089,25 +1542,48 @@
         });
 
         $("exportXlsxBtn").addEventListener("click", () => {
-            // export only diffs
             const exportOnly = state.results.filter(r => r.status !== "UNCHANGED");
             exportReportXlsx(exportOnly);
         });
 
         $("showOnly").addEventListener("change", applyViewFilters);
-        $("search").addEventListener("input", applyViewFilters);
+        $("search").addEventListener("input", debounce(applyViewFilters, 150));
 
+        $("pageSize").addEventListener("change", () => {
+            state.pageSize = parseInt($("pageSize").value, 10) || 50;
+            state.page = 1;
+            renderCurrentPage();
+        });
+
+        $("prevPageBtn").addEventListener("click", () => {
+            state.page = Math.max(1, state.page - 1);
+            renderCurrentPage();
+        });
+
+        $("nextPageBtn").addEventListener("click", () => {
+            const maxPage = Math.max(1, Math.ceil(state.viewRows.length / state.pageSize));
+            state.page = Math.min(maxPage, state.page + 1);
+            renderCurrentPage();
+        });
+
+        // Changing normalization should update preview + diffs on next compare
+        $("normalizeMode").addEventListener("change", () => {
+            if (state.results.length) compare();
+        });
+        $("ignoreBlankLines").addEventListener("change", () => {
+            if (state.results.length) compare();
+        });
+
+        // Splitter
         (function enableSplitter() {
             const splitRow = document.querySelector(".splitRow");
             const splitter = document.getElementById("splitter");
             if (!splitRow || !splitter) return;
 
             let dragging = false;
-
             const minLeft = 360;
             const minRight = 420;
             const splitterW = 18;
-
             let ratio = null;
 
             function getGapPx() {
@@ -1120,7 +1596,6 @@
                 const gap = getGapPx();
                 const total = splitRow.getBoundingClientRect().width;
                 const usableTotal = total - (2 * gap);
-
                 const maxLeft = usableTotal - splitterW - minRight;
 
                 const clampedLeft = Math.max(minLeft, Math.min(leftPx, maxLeft));
@@ -1178,6 +1653,9 @@
                 splitRow.style.gridTemplateColumns = "";
             });
         })();
+
+        // Init
+        state.pageSize = parseInt($("pageSize").value, 10) || 50;
     </script>
 </body>
 
