@@ -4,13 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <header class="appHeader">
-        <img src="assets/logo.png" alt="Code Compare logo" class="appLogo">
-        <div class="appTitle">
-            <p>Upload old + new exports, map columns, filter, normalize, and compare by key.</p>
-        </div>
-    </header>
-
+    <title>CSV/XLSX Code Compare (Local)</title>
 
     <!-- CSS -->
     <style>
@@ -642,6 +636,13 @@
 </head>
 
 <body>
+    <header class="appHeader">
+        <img src="assets/logo.png" alt="Code Compare logo" class="appLogo">
+        <div class="appTitle">
+            <p>Upload old + new exports, map columns, filter, normalize, and compare by key.</p>
+        </div>
+    </header>
+    
     <h1>Local CSV/XLSX Code Comparator</h1>
     <p class="sub">
         Upload old + new exports, map columns, filter by author/object, choose normalization, then compare by key.
@@ -718,8 +719,8 @@
                         <span class="badge opt">Optional</span>
                     </div>
                     <select id="normalizeMode">
-                        <option value="trim">Trim trailing spaces (default)</option>
-                        <option value="none">No normalization</option>
+                        <option value="none" selected>No normalization (default)</option>
+                        <option value="trim">Trim trailing spaces</option>
                         <option value="collapse_ws">Collapse whitespace (aggressive)</option>
                         <option value="strip_comments_abap">Strip ABAP comments (naive)</option>
                     </select>
